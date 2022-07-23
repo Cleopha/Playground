@@ -1,8 +1,7 @@
 package main
 
-import "concurrency/waitGroup"
+import _select "concurrency/select"
 
 func main() {
-	waitGroup.ClosureTwo()
-	waitGroup.ClosureOne()
+	_select.Three()
 }
