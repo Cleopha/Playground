@@ -1,7 +1,9 @@
 package main
 
-import _select "concurrency/select"
+import (
+	"concurrency/sync_package"
+)
 
 func main() {
-	_select.Three()
+	sync_package.Six()
 }
