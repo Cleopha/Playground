@@ -1,9 +1,9 @@
 package main
 
 import (
-	"concurrency/patterns"
+	"concurrency/context"
 )
 
 func main() {
-	patterns.Do3()
+	context.Do3()
 }
