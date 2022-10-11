@@ -1,9 +1,9 @@
 package main
 
 import (
-	"concurrency/sync_package"
+	"concurrency/patterns"
 )
 
 func main() {
-	sync_package.Six()
+	patterns.Do3()
 }
