@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: bitnami/redis
+    environment:
+      - REDIS_PASSWORD=redispassword
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres:
