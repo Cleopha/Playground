@@ -1,0 +1,13 @@
+html {
+    scroll-snap-type: both mandatory;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    overflow: hidden;
+  }
+  
+  section {
+    scroll-snap-align: start;
+  }
+  
