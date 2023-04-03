@@ -27,6 +27,8 @@ const AlertsTable = () => {
   const [sortedAlertData, setSortedAlertData] = useState(alertData);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
+  const [modifyAlert, setModifyAlert] = useState<IAlert | null>(null);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleHeaderClick = (attribute: keyof IAlert) => {
@@ -55,7 +57,7 @@ const AlertsTable = () => {
               size="sm"
               variant="ghost"
               onClick={() => {
-                // Handle the create button action
+                setModifyAlert(null);
                 onOpen();
               }}
             >
@@ -156,7 +158,10 @@ const AlertsTable = () => {
                     <EditIcon
                       color="blue.500"
                       _hover={{ color: "blue.700", cursor: "pointer" }}
-                      onClick={() => console.log("Modifier", alert.id)}
+                      onClick={() => {
+                        setModifyAlert(alert);
+                        onOpen();
+                      }}
                       mr={2}
                     />
                     <DeleteIcon
@@ -191,7 +196,7 @@ const AlertsTable = () => {
         </TableContainer>
       </div>
 
-      <AlertModal isOpen={isOpen} onClose={onClose} />
+      <AlertModal isOpen={isOpen} onClose={onClose} modifyAlert={modifyAlert} />
     </>
   );
 };

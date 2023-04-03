@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   HStack,
@@ -15,63 +15,100 @@ import {
   Input,
   Select,
   Textarea,
-  Slider,
-  SliderTrack,
-  SliderThumb,
-  SliderFilledTrack,
   Flex,
 } from "@chakra-ui/react";
 
 import { countyName } from "../../../map/county";
+import { IAlert } from "../../../utils/alert";
+import { iconPerType } from "../../../map/marker";
+import SliderSeverity from "../../../input/SliderSeverity";
 
 interface AlertModalProps {
   isOpen: boolean;
   onClose: () => void;
+  modifyAlert: IAlert | null;
 }
 
-const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
+const AlertModal: React.FC<AlertModalProps> = ({
+  isOpen,
+  onClose,
+  modifyAlert,
+}) => {
   const [locationType, setLocationType] = useState<"coordinates" | "address">(
     "coordinates"
   );
+  const options = [
+    { label: "Weather", value: "WEATHER" },
+    { label: "Security", value: "SECURITY" },
+    { label: "Health", value: "HEALTH" },
+    { label: "Fire", value: "FIRE" },
+  ];
+  const [selectedValue, setSelectedValue] = useState<
+    "WEATHER" | "SECURITY" | "HEALTH" | "FIRE"
+  >(modifyAlert ? modifyAlert.type : "FIRE");
+
+  const [severity, setSeverity] = useState<number>(5);
+
+  useEffect(() => {
+    setSelectedValue(modifyAlert ? modifyAlert.type : "FIRE");
+    setSeverity(modifyAlert ? modifyAlert.severity : 5);
+  }, [modifyAlert]);
 
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent borderRadius="8px">
-          <ModalHeader> {"Create Alert"} </ModalHeader>
+          <ModalHeader>
+            {modifyAlert ? "Update Alert" : "Create Alert"}{" "}
+          </ModalHeader>
           <ModalCloseButton />
 
           <ModalBody>
             <FormControl mb={4}>
               <FormLabel>Title</FormLabel>
-              <Input type="text" placeholder="Enter the title" />
+              <Input
+                defaultValue={modifyAlert ? modifyAlert.title : ""}
+                type="text"
+                placeholder="Enter the title"
+              />
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>Description</FormLabel>
-              <Textarea placeholder="Enter the description" />
+              <Textarea
+                defaultValue={modifyAlert ? modifyAlert.description : ""}
+                placeholder="Enter the description"
+              />
             </FormControl>
 
             <HStack mb={4}>
               <FormControl>
                 <FormLabel>Type</FormLabel>
-                <Select placeholder="Select the type">
-                  <option value="Fire">Fire</option>
-                  <option value="Flood">Flood</option>
-                  <option value="Earthquake">Earthquake</option>
-                  <option value="Storm">Storm</option>
+                <Select
+                  defaultValue={modifyAlert ? modifyAlert.type : "FIRE"}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    setSelectedValue(
+                      e.target.value as
+                        | "WEATHER"
+                        | "SECURITY"
+                        | "HEALTH"
+                        | "FIRE"
+                    )
+                  }
+                  icon={<img src={iconPerType[selectedValue]} />}
+                >
+                  {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Select>
               </FormControl>
 
               <FormControl>
                 <FormLabel>Severity</FormLabel>
-                <Slider defaultValue={5} min={0} max={10} step={1}>
-                  <SliderTrack>
-                    <SliderFilledTrack />
-                  </SliderTrack>
-                  <SliderThumb />
-                </Slider>
+                <SliderSeverity severity={severity} setSeverity={setSeverity} />
               </FormControl>
             </HStack>
 
@@ -129,12 +166,20 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
                 <HStack py={2} px={4} mb={4}>
                   <FormControl>
                     <FormLabel>Latitude</FormLabel>
-                    <Input type="number" placeholder="Enter the latitude" />
+                    <Input
+                      defaultValue={modifyAlert ? modifyAlert.lat : ""}
+                      type="number"
+                      placeholder="Enter the latitude"
+                    />
                   </FormControl>
 
                   <FormControl>
                     <FormLabel>Longitude</FormLabel>
-                    <Input type="number" placeholder="Enter the longitude" />
+                    <Input
+                      defaultValue={modifyAlert ? modifyAlert.lng : ""}
+                      type="number"
+                      placeholder="Enter the longitude"
+                    />
                   </FormControl>
                 </HStack>
               ) : (
@@ -147,7 +192,10 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
 
             <FormControl mb={4}>
               <FormLabel>Department</FormLabel>
-              <Select placeholder="Select the department">
+              <Select
+                defaultValue={modifyAlert ? modifyAlert.department : ""}
+                placeholder="Select the department"
+              >
                 {countyName.map((dept: string, id: number) => (
                   <option key={id} value={dept}>
                     {dept}
@@ -162,7 +210,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose }) => {
               Cancel
             </Button>
             <Button variant="solid" colorScheme="blue">
-              {"Create"}
+              {modifyAlert ? "Save" : "Create"}
             </Button>
           </ModalFooter>
         </ModalContent>
