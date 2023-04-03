@@ -1,4 +1,5 @@
 declare module "*.geojson" {
-    const value: any;
-    export default value;
-  }  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const value: any;
+  export default value;
+}

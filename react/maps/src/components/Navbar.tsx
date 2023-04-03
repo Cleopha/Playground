@@ -39,9 +39,8 @@ export const Navbar = () => {
           >
             SafetyHub
           </Button>
-
         </Flex>
-        
+
         <HStack display="flex" alignItems="center" spacing={2}>
           <HStack
             spacing={1}
