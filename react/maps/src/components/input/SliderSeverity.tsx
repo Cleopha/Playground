@@ -19,13 +19,12 @@ const SliderSeverity: React.FC<SliderSeverityProps> = ({
 }) => {
   const thumbStyle = {
     background: severityColors[severity],
-    borderRadius: "50%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     color: "white",
-    width: "20px",
-    height: "20px",
+    width: "25px",
+    height: "25px",
     boxShadow: "0px 0px 5px rgba(0,0,0,0.3)",
     outline: "none",
   };
@@ -44,7 +43,11 @@ const SliderSeverity: React.FC<SliderSeverityProps> = ({
         <SliderFilledTrack bg={severityColors[severity]} />
       </SliderTrack>
       <SliderThumb boxSize={2} style={thumbStyle}>
-        <Box textColor={"black"} style={{ fontSize: "12px" }}>
+        <Box
+          textColor={"black"}
+          textAlign="center"
+          style={{ fontSize: "15px" }}
+        >
           {severity}
         </Box>
       </SliderThumb>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
   HStack,
   Button,
   Modal,
@@ -12,21 +11,30 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
-  Input,
-  Select,
-  Textarea,
-  Flex,
 } from "@chakra-ui/react";
 
-import { countyName } from "../../../map/county";
 import { IAlert } from "../../../utils/alert";
-import { iconPerType } from "../../../map/marker";
 import SliderSeverity from "../../../input/SliderSeverity";
+import TitleInput from "./FormAlert/TitleInput";
+import DrescriptionInput from "./FormAlert/DescriptionInput";
+import TypeSelect from "./FormAlert/TypeSelect";
+import DepartmentSelect from "./FormAlert/DepartmentSelect";
+import { useFormValidation } from "./FormAlert/hooks/useFormValidation";
+import LocationInput from "./FormAlert/LocationInput";
 
 interface AlertModalProps {
   isOpen: boolean;
   onClose: () => void;
   modifyAlert: IAlert | null;
+}
+
+export interface FormValues {
+  title: string;
+  description: string;
+  lat: number;
+  lng: number;
+  address: string;
+  department: string;
 }
 
 const AlertModal: React.FC<AlertModalProps> = ({
@@ -37,22 +45,73 @@ const AlertModal: React.FC<AlertModalProps> = ({
   const [locationType, setLocationType] = useState<"coordinates" | "address">(
     "coordinates"
   );
-  const options = [
-    { label: "Weather", value: "WEATHER" },
-    { label: "Security", value: "SECURITY" },
-    { label: "Health", value: "HEALTH" },
-    { label: "Fire", value: "FIRE" },
-  ];
-  const [selectedValue, setSelectedValue] = useState<
+  const [selectedType, setSelectedType] = useState<
     "WEATHER" | "SECURITY" | "HEALTH" | "FIRE"
   >(modifyAlert ? modifyAlert.type : "FIRE");
-
   const [severity, setSeverity] = useState<number>(5);
 
+  const [formValues, setFormValues] = useState<FormValues>({
+    address: "",
+    lat: modifyAlert ? modifyAlert.lat : 0,
+    lng: modifyAlert ? modifyAlert.lng : 0,
+    title: modifyAlert ? modifyAlert.title : "",
+    description: modifyAlert ? modifyAlert.description : "",
+    department: modifyAlert ? modifyAlert.department : "San Francisco",
+  });
+
+  const { formErrors, setFormErrors, validateForm } = useFormValidation({
+    title: "",
+    description: "",
+    lat: "",
+    lng: "",
+    address: "",
+  });
+
+  const handleSubmit = () => {
+    if (validateForm(formValues, locationType)) {
+      // TODO if create or modify send good request create on route prisma upsert
+      onClose();
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
+  };
+
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedType(
+      e.target.value as "WEATHER" | "SECURITY" | "HEALTH" | "FIRE"
+    );
+  };
+
   useEffect(() => {
-    setSelectedValue(modifyAlert ? modifyAlert.type : "FIRE");
+    setSelectedType(modifyAlert ? modifyAlert.type : "FIRE");
     setSeverity(modifyAlert ? modifyAlert.severity : 5);
+
+    setFormValues({
+      address: "",
+      lat: modifyAlert ? modifyAlert.lat : 0,
+      lng: modifyAlert ? modifyAlert.lng : 0,
+      title: modifyAlert ? modifyAlert.title : "",
+      description: modifyAlert ? modifyAlert.description : "",
+      department: modifyAlert ? modifyAlert.department : "San Francisco",
+    });
   }, [modifyAlert]);
+
+  useEffect(() => {
+    setFormErrors({
+      title: "",
+      description: "",
+      lat: "",
+      lng: "",
+      address: "",
+    });
+  }, [isOpen, setFormErrors]);
 
   return (
     <>
@@ -65,46 +124,24 @@ const AlertModal: React.FC<AlertModalProps> = ({
           <ModalCloseButton />
 
           <ModalBody>
-            <FormControl mb={4}>
-              <FormLabel>Title</FormLabel>
-              <Input
-                defaultValue={modifyAlert ? modifyAlert.title : ""}
-                type="text"
-                placeholder="Enter the title"
-              />
-            </FormControl>
+            <TitleInput
+              value={modifyAlert ? modifyAlert.title : ""}
+              error={formErrors.title}
+              onChange={handleChange}
+            />
 
-            <FormControl mb={4}>
-              <FormLabel>Description</FormLabel>
-              <Textarea
-                defaultValue={modifyAlert ? modifyAlert.description : ""}
-                placeholder="Enter the description"
-              />
-            </FormControl>
+            <DrescriptionInput
+              value={modifyAlert ? modifyAlert.description : ""}
+              error={formErrors.description}
+              onChange={handleChange}
+            />
 
             <HStack mb={4}>
-              <FormControl>
-                <FormLabel>Type</FormLabel>
-                <Select
-                  defaultValue={modifyAlert ? modifyAlert.type : "FIRE"}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    setSelectedValue(
-                      e.target.value as
-                        | "WEATHER"
-                        | "SECURITY"
-                        | "HEALTH"
-                        | "FIRE"
-                    )
-                  }
-                  icon={<img src={iconPerType[selectedValue]} />}
-                >
-                  {options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
+              <TypeSelect
+                value={modifyAlert ? modifyAlert.description : ""}
+                selectedType={selectedType}
+                onChange={handleTypeChange}
+              />
 
               <FormControl>
                 <FormLabel>Severity</FormLabel>
@@ -112,104 +149,29 @@ const AlertModal: React.FC<AlertModalProps> = ({
               </FormControl>
             </HStack>
 
-            <Box
-              borderRadius="8px"
-              border="1px solid"
-              borderColor="gray.300"
-              mb={4}
-            >
-              <Box>
-                <Flex align="center" justify="center">
-                  <Button
-                    style={{ margin: 0, backgroundColor: "transparent" }}
-                    _hover={{ backgroundColor: "transparent" }}
-                    variant="ghost"
-                    flex="1"
-                    colorScheme="blue"
-                    isActive={locationType === "coordinates"}
-                    borderRight={"1px"}
-                    borderRadius="0px"
-                    onClick={() => setLocationType("coordinates")}
-                  >
-                    Coordinate
-                  </Button>
-                  <Button
-                    style={{ margin: 0, backgroundColor: "transparent" }}
-                    _hover={{ backgroundColor: "transparent" }}
-                    variant="ghost"
-                    flex="1"
-                    colorScheme="blue"
-                    borderRadius="0px"
-                    isActive={locationType === "address"}
-                    onClick={() => setLocationType("address")}
-                  >
-                    Address
-                  </Button>
-                </Flex>
-                <Box position="relative" height="3px" width="100%">
-                  <Box
-                    position="absolute"
-                    height="100%"
-                    width="50%"
-                    bg="#8bceee"
-                    transition="transform 0.3s ease-in-out"
-                    transform={
-                      locationType === "coordinates"
-                        ? "translateX(0%)"
-                        : "translateX(100%)"
-                    }
-                  />
-                </Box>
-              </Box>
+            <LocationInput
+              locationType={locationType}
+              setLocationType={setLocationType}
+              modifyAlert={modifyAlert}
+              formErrors={{
+                lat: formErrors.lat,
+                lng: formErrors.lng,
+                address: formErrors.address,
+              }}
+              onChange={handleChange}
+            />
 
-              {locationType === "coordinates" ? (
-                <HStack py={2} px={4} mb={4}>
-                  <FormControl>
-                    <FormLabel>Latitude</FormLabel>
-                    <Input
-                      defaultValue={modifyAlert ? modifyAlert.lat : ""}
-                      type="number"
-                      placeholder="Enter the latitude"
-                    />
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Longitude</FormLabel>
-                    <Input
-                      defaultValue={modifyAlert ? modifyAlert.lng : ""}
-                      type="number"
-                      placeholder="Enter the longitude"
-                    />
-                  </FormControl>
-                </HStack>
-              ) : (
-                <FormControl py={2} px={4} mb={4}>
-                  <FormLabel>Address</FormLabel>
-                  <Input type="text" placeholder="Enter the address" />
-                </FormControl>
-              )}
-            </Box>
-
-            <FormControl mb={4}>
-              <FormLabel>Department</FormLabel>
-              <Select
-                defaultValue={modifyAlert ? modifyAlert.department : ""}
-                placeholder="Select the department"
-              >
-                {countyName.map((dept: string, id: number) => (
-                  <option key={id} value={dept}>
-                    {dept}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
+            <DepartmentSelect
+              value={modifyAlert ? modifyAlert.department : "San Francisco"}
+              onChange={handleChange}
+            />
           </ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button variant="solid" colorScheme="blue">
+            <Button onClick={handleSubmit} variant="solid" colorScheme="blue">
               {modifyAlert ? "Save" : "Create"}
             </Button>
           </ModalFooter>
