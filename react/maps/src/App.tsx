@@ -11,6 +11,12 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import MapPage from "./components/pages/map/MapPage";
 import AlertAdminPanel from "./components/pages/admin/AdminPanel";
+import AboutPage from "./components/pages/about-us/About";
+import AboutPeople from "./components/pages/about-us/AboutPeople";
+import { SignIn } from "./components/pages/login/SignIn";
+import { Register } from "./components/pages/register/Register";
+import { Home } from "./components/pages/home/Home";
+import { Contact } from "./components/pages/contact/Contact";
 
 const theme = extendTheme({
   config: {
@@ -44,8 +50,14 @@ function App() {
       <ChakraProvider theme={theme}>
         <Navbar />
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/Map" element={<MapPage />} />
           <Route path="/Admin" element={<AlertAdminPanel />} />
+          <Route path="/Contact" element={<Contact />} />
+          <Route path="/SignIn" element={<SignIn />} />
+          <Route path="/Register" element={<Register />} />
+          <Route path="/about-us" element={<AboutPage />} />
+          <Route path="/about-us/:id" element={<AboutPeople />} />
         </Routes>
         {isMapPage ? null : <Footer />}
       </ChakraProvider>
