@@ -15,6 +15,8 @@ interface MapContextData {
   searchOptions: ISearchOptionMap;
   setSearchOptions: React.Dispatch<React.SetStateAction<ISearchOptionMap>>;
   cardRefs: React.MutableRefObject<(HTMLElement | null)[]>;
+
+  // TODO add IAlert[] list
 }
 
 const MapContext = createContext<MapContextData>({

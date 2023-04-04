@@ -118,6 +118,7 @@ const Map: React.FC = () => {
 
       // Cluster Marker
       const markers: google.maps.Marker[] = [];
+      // TODO replace by context IAlert []
       alertData.forEach((item: IAlert, id: number) => {
         const marker = new google.maps.Marker({
           position: { lat: item.lat, lng: item.lng },

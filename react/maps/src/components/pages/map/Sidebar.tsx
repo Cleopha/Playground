@@ -97,12 +97,13 @@ export default function Sidebar() {
       <Grid templateColumns="1fr auto" alignItems="center">
         <Divider h="2px" bg="white" />
         <Button
-          onClick={() => console.log(searchOptions)}
           ml="1"
           mt="1"
           colorScheme={"cyan"}
           size="sm"
           lineHeight="1"
+          // TODO Search
+          // onClick={() => console.log(searchOptions)}
         >
           Search
         </Button>

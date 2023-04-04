@@ -167,7 +167,8 @@ const AlertsTable = () => {
                     <DeleteIcon
                       color="red.500"
                       _hover={{ color: "red.700", cursor: "pointer" }}
-                      onClick={() => console.log("Supprimer", alert.id)}
+                      // TODO Remove in list
+                      // onClick={() => console.log("Supprimer", alert.id)}
                     />
                   </Td>
 

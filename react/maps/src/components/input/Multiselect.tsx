@@ -41,9 +41,6 @@ export default function Multiselect() {
                 key={tid}
                 label={tag.label}
                 onRemove={tag.onRemove}
-                onSelect={() => {
-                  console.log(tags);
-                }}
               />
             ))
           }
