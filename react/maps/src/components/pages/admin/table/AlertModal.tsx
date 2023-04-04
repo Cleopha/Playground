@@ -138,7 +138,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
 
             <HStack mb={4}>
               <TypeSelect
-                value={modifyAlert ? modifyAlert.description : ""}
+                value={modifyAlert ? modifyAlert.type : "FIRE"}
                 selectedType={selectedType}
                 onChange={handleTypeChange}
               />
